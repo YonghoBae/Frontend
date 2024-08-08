@@ -7,4 +7,8 @@ console.log("책목록:",books);
 
 const userData1 = ["홍길동",20,true];
 
+//union 세개 중에 하나의 타입과 동일하면 됨
 const userData2:(string | number | boolean)[] = ['홍길동',20,true];
+
+//각 자리에 순서대로 같은 타입이어야함
+const userData3:[string, number, boolean] = ['홍길동',20,true];

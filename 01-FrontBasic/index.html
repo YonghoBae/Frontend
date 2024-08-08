@@ -1,0 +1,52 @@
+<!-- html5 표준문법에 의해 코딩된 문서임을 명시 -->
+<!DOCTYPE html>
+
+<!-- html 페이지의 콘텐츠 내용이 기본이 영어버전임을 명시 -->
+<html lang="en">
+
+    <!-- 헤드태그 영역은 사용자를 위한 영역이 아닌 웹브라우저나 검색엔진 SWBot을 위한 추가정보제공 영역 -->
+<head>
+    <!-- 웹브라우저에게 영어권문자뿐만 아니라 유니코드문자(UTF-8:한글/중국어/일본어/태국어/아랍어 등 비영어권 문자)도 컨텐츠 내에 포함 -->
+    <meta charset="UTF-8">
+    <!-- 모바일 브라우저에서 기본 가로 해상도를 물리적 디바이스 가로 해상도를 기준으로 설정 화대/축소를 설정하는 기능제공 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- 웹브라우저에 탭에 표시되는 웹페이지 제목표시 및 검색엔진SW에 제공된 웹페이지의 제목정보제공 웹페이지 내에서 가장 중요한 태그 -->
+    <title>메인페이지</title>
+
+    <link rel="stylesheet" href="./common.css"/>
+
+    <!-- 해당 페이지의 스타일 적용을 위한 스타일 정의 영역(엠베디드된 스타일시트) -->
+    <style>
+        h1 {
+            color: red;
+            font-size: 30px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<!-- body태그 모든 html태그는 사용자를 위한 UI/UX제공용도로 제공
+실제 사용자가 보는 화면의 내용은 모두 BODY태그 내에 존재 -->
+<body>
+    <h1 style="color: blue;">메인제목</h1>
+    <h2>부제목</h2>
+
+    <script>
+        console.log("Index.html 페이지가 로딩");
+        console.log("페이지 로딩시 에레메시지 출력");
+        console.log("페이지 로딩시 경고메시지 출력");
+        console.info("페이지 로딩시 정보메시지 출력");
+
+        // debugger;
+
+        console.log("로직 1 실행");
+
+        console.log("로직 2 실행");
+
+        // debugger;
+
+        console.log("로직 3 실행");
+    </script>
+</body>
+</html>

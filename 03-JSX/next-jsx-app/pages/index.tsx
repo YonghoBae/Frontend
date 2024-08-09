@@ -38,6 +38,24 @@ export default function Home() {
     backgroundColor: 'black',
   };
 
+  const topics = [
+    {
+      id: 1,
+      title: 'React',
+      content: '리액트는 페이스북에서 개발한 웹 UI 라이브러리입니다.',
+    },
+    {
+      id: 2,
+      title: 'Angular',
+      content: '앵귤러는 구글에서 개발한 웹 UI 라이브러리입니다.',
+    },
+    {
+      id: 3,
+      title: 'Next.js',
+      content: 'Next.js는 Vercel에서 개발한 웹 UI 라이브러리입니다.',
+    },
+  ];
+
   return (
     <>
       <Head>
@@ -117,24 +135,26 @@ export default function Home() {
         {/* 직접적으로 스타일정의하는 방법-인라인스타일 */}
         <div style={myStyle}>JSX 스타일링 방법2</div>
 
-
         {/* 클래스로 정의된 공통 스타일 적용법 */}
         <div className={styles.code}>JSX 스타일링 방법3</div>
+        <div className="code">JSX 스타일링 방법4</div>
 
         <div className={styles.grid}>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2>
-              Docs <span>-&gt;</span>
-            </h2>
-            <p>
-              Find in-depth information about Next.js features and&nbsp;API.
-            </p>
-          </a>
+          {/* 동적으로 배열 아이템 수만큼 JSX요소를 나타냄 */}
+          {topics.map((topic, index) => (
+            <a
+              href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
+              className={styles.card}
+              target="_blank"
+              rel="noopener noreferrer"
+              key={index}
+            >
+              <h2>
+                {topic.title} <span>-&gt;</span>
+              </h2>
+              <p>{topic.content}&nbsp;</p>
+            </a>
+          ))}
 
           <a
             href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"

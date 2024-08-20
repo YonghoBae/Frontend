@@ -1,24 +1,31 @@
-import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
 
-import { Blog } from "@/interfaces/blog";
-
-const people = [
-  {
-    name: 'Lindsay Walton',
-    title: 'Front-end Developer',
-    email: 'lindsay.walton@example.com',
-    role: 'Member',
-  },
-  // More people...
-];
+import { Blog } from '@/interfaces/blog';
+import axios from 'axios';
 
 const BlogList = () => {
+  // const BlogList = ({blogs}:{blogs:Blog[]}) => {
   const router = useRouter();
 
-  useEffect(()=>{
-    
-  },[]);
+  const [blogs, setBlogs] = useState<Blog[]>([]);
+
+  useEffect(() => {
+    getBlogList();
+  }, []);
+
+  async function getBlogList() {
+    try {
+      const res = await axios.get('http://localhost:5000/api/article/list');
+      if (res.data.code == 200) {
+        setBlogs(res.data.data);
+      } else {
+        console.error('서버 에러발생');
+      }
+    } catch (err) {
+      console.error('백엔드 API 호출 에러발생');
+    }
+  }
 
   return (
     <div className="px-4 sm:px-6 lg:px-8">
@@ -34,7 +41,7 @@ const BlogList = () => {
         <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
           <button
             type="button"
-            onClick={()=>(router.push("/mypage/blog/create"))}
+            onClick={() => router.push('/mypage/blog/create')}
             className="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
           >
             게시글 작성
@@ -77,27 +84,22 @@ const BlogList = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {people.map(person => (
-                  <tr key={person.email}>
+                {blogs.map((blog, index) => (
+                  <tr key={index}>
                     <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
-                      {person.name}
+                      {blog.article_id}
                     </td>
                     <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                      {person.title}
+                      {blog.title}
                     </td>
                     <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                      {person.email}
+                      {blog.is_display_code == 1 ? '게시중' : '게시안함'}
                     </td>
                     <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                      {person.role}
+                      {blog.ip_address}
                     </td>
                     <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
-                      <a
-                        href="#"
-                        className="text-indigo-600 hover:text-indigo-900"
-                      >
-                        Edit<span className="sr-only">, {person.name}</span>
-                      </a>
+                      {blog.reg_date}
                     </td>
                   </tr>
                 ))}
@@ -108,6 +110,13 @@ const BlogList = () => {
       </div>
     </div>
   );
+};
+
+export const getServerSideProps = async () => {
+  //백엔드에서 게시글 데이터를 조회해와서 해당 컴포넌트의 props데이터 파라메터 형식으로 전달한다.
+  const res = await fetch('http://localhost:5000/api/article/list');
+  const result = await res.json();
+  return { props: { blogs: result.data } };
 };
 
 export default BlogList;

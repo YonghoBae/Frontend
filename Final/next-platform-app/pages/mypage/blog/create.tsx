@@ -1,11 +1,17 @@
 import { useRouter } from 'next/router';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-import {CreateBlog} from '@/interfaces/blog';
+import { CreateBlog } from '@/interfaces/blog';
 import axios from 'axios';
 
 const BlogCreate = () => {
   const router = useRouter();
+
+  useEffect(() => {
+    if (localStorage.getItem('token') == undefined) {
+      router.push('/login');
+    }
+  }, []);
 
   const [blog, setBlog] = useState<CreateBlog>({
     title: '',
@@ -13,22 +19,30 @@ const BlogCreate = () => {
     display: 1,
   });
 
-  const blogSubmit= async(e:React.FormEvent<HTMLFormElement>)=>{
+  const blogSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    try{
-      const response = await axios.post("http://localhost:5000/api/article/create",blog);
-      if(response.data.code == 200){
-        alert("등록완료");
-        router.push("/mypage/blog/list");
-      }else{
-        console.error('백엔드 에러발생...',response.data.msg);
-      }
+    const token = localStorage.getItem('token');
 
-    }catch(err){
-      console.error("백엔드 API호출에러발생");
+    try {
+      const response = await axios.post(
+        'http://localhost:5000/api/article/create',
+        blog,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+
+      if (response.data.code == 200) {
+        alert('등록완료');
+        router.push('/mypage/blog/list');
+      } else {
+        console.error('백엔드 에러발생...', response.data.msg);
+      }
+    } catch (err) {
+      console.error('백엔드 API호출에러발생');
     }
-  }
+  };
 
   return (
     <form onSubmit={blogSubmit}>
@@ -56,7 +70,9 @@ const BlogCreate = () => {
                     name="title"
                     type="text"
                     value={blog.title}
-                    onChange={(e)=>{setBlog({...blog,title:e.target.value})}}
+                    onChange={e => {
+                      setBlog({ ...blog, title: e.target.value });
+                    }}
                     placeholder="제목을 입력해주세요"
                     autoComplete="title"
                     className="block flex-1 border-0  bg-transparent py-1.5 pl-3 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
@@ -77,7 +93,9 @@ const BlogCreate = () => {
                   id=" contents"
                   name=" contents"
                   value={blog.contents}
-                  onChange={(e)=>{setBlog({...blog,contents:e.target.value})}}
+                  onChange={e => {
+                    setBlog({ ...blog, contents: e.target.value });
+                  }}
                   rows={3}
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   defaultValue={''}
@@ -97,7 +115,9 @@ const BlogCreate = () => {
                   id=" display"
                   name=" display"
                   value={blog.display}
-                  onChange={(e)=>{setBlog({...blog,display:Number(e.target.value)})}}
+                  onChange={e => {
+                    setBlog({ ...blog, display: Number(e.target.value) });
+                  }}
                   autoComplete=" display-name"
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
                 >

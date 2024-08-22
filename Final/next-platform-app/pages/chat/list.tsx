@@ -1,17 +1,29 @@
+import { Channel } from '@/interfaces/message';
+import axios from 'axios';
 import { useRouter } from 'next/router';
-
-const people = [
-  {
-    name: 'Lindsay Walton',
-    title: 'Front-end Developer',
-    email: 'lindsay.walton@example.com',
-    role: 'Member',
-  },
-  // More people...
-];
+import { useEffect, useState } from 'react';
+import Index from '../samples';
 
 const ChatList = () => {
   const router = useRouter();
+  const [channels, setChannels] = useState<Channel[]>([]);
+
+  useEffect(() => {
+    const getChannels = async () => {
+      const token = localStorage.getItem('token');
+
+      const res = await axios.get('http://localhost:5000/api/channel/list', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      setChannels(res.data.data);
+    };
+    getChannels();
+  }, []);
+
+  const entryChannel = async(cid:number) =>{
+    router.push(`/chat?cid=${cid.toString()}`)
+  }
   return (
     <div className="ml-32 mr-32 px-4 sm:px-6 lg:px-8">
       <div className="mt-32 sm:flex sm:items-center">
@@ -44,13 +56,13 @@ const ChatList = () => {
                       scope="col"
                       className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
                     >
-                      Name
+                      채널명
                     </th>
                     <th
                       scope="col"
                       className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
                     >
-                      Title
+                      참여제한수
                     </th>
 
                     <th
@@ -62,13 +74,13 @@ const ChatList = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
-                  {people.map(person => (
-                    <tr key={person.email}>
+                  {channels.map((channel,index) => (
+                    <tr key={index}>
                       <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
-                        {person.name}
+                        {channel.channel_name}
                       </td>
                       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                        {person.title}
+                        {channel.user_limit}
                       </td>
 
                       <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-center text-sm font-medium sm:pr-6">
@@ -81,6 +93,7 @@ const ChatList = () => {
                             </a> */}
                         <button
                           type="button"
+                          onClick={()=>{entryChannel(channel.channel_id)}}
                           className="rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                         >
                           참여하기

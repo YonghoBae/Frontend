@@ -1,12 +1,17 @@
 import { Message } from '@/interfaces/message';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { socket } from '@/library/socket';
+import { GlobalContext } from '@/library/globalContext';
 
 const Chat = () => {
   const router = useRouter();
 
-  const [memberId, setMemberId] = useState<number>(1);
+  const { globalData, setGlobalData } = useContext(GlobalContext);
+
+  const [memberToken, setMemberToken] = useState<any>();
+
+  const [channel, setChannel] = useState<number>(0);
 
   const [message, setMessage] = useState<string>('');
 
@@ -38,6 +43,13 @@ const Chat = () => {
   //next.config.mjs 파일 내 reactStrictMode(엄격모드)값을 false로 변경해야 정확히 1회만 실행
   //채팅서버와 연결되는 클라이언트 채팅 소켓 객체 생성 및 각종 채팅 이벤트 기능 구현영역
   useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (localStorage.getItem('token') == undefined) {
+      router.push('/login');
+    }
+
+    setMemberToken(token as string);
+
     //서버소켓 연결
     socket.connect();
     //서버소켓과 연결이 완료되면 실행되는 이벤트처리함수
@@ -63,30 +75,38 @@ const Chat = () => {
 
     //해당 채팅 컴포넌트가 화면에서 사라질때(언마운팅시점)
     //소켓관련 이벤트를 모두 제거해줘야함. 그렇지 않으면 메시지를 여러번 수신할수있음
-    return ()=>{
+    return () => {
       //socket.off(클라이언트 이벤트 수신기명); // 이벤트 제거
       socket.off('connect');
       socket.off('disconnect');
       socket.off('receiveAll');
-    }
+    };
   }, []);
 
   //useEffect훅은 CSR환경에서 작동되고 useRouter훅은 SSR/CSR순서로 2번 작동
   //useEffect훅에서 useRouter훅을 이용해 URL키값이 추출안되는 문제는 useRouter.isReady값을 이용해 해결가능
   //useRouter.isReady 값이 기본은 false->true로 변경되는 시점에 관련 기능 구현하면 됨
   useEffect(() => {
-    console.log('현재 URL주소에서 사용자 고유번호 추출:', router.query.id);
+    console.log('현재 URL주소에서 사용자 고유번호 추출:', router.query.cid);
 
-    if (router.query.id != undefined) {
-      setMemberId(Number(router.query.id));
+    if (router.query.cid != undefined) {
+      setChannel(Number(router.query.cid));
     }
   }, [router.isReady]);
 
+  useEffect(() => {
+    //채팅방 입장처리하기
+    console.log('채팅방 채널이 변경되었습니다.', channel);
+    if (channel > 0) {
+      console.log('전역 데이터 정보 확인하기:', globalData);
+    }
+  }, [channel]);
+
   const sendMessage = () => {
     const msgData = {
-      member_id: memberId,
-      name: `사용자-${memberId.toString()}`,
-      profile: `http://localhost:5000/img/user${memberId.toString()}.png`,
+      member_id: globalData.member.member_id,
+      name: globalData.member.name,
+      profile: `http://localhost:5000/img/user${globalData.member.member_id}}.png`,
       message: message,
       send_date: Date.now().toString(),
     };
@@ -108,7 +128,7 @@ const Chat = () => {
               <div className="flex flex-col h-full">
                 <div className="grid grid-cols-12 gap-y-2">
                   {messageList.map((msg, index) =>
-                    msg.member_id === memberId ? (
+                    msg.member_id === globalData.member.member_id ? (
                       <div
                         key={index}
                         className="col-start-6 col-end-13 p-3 rounded-lg"

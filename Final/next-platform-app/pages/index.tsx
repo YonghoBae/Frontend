@@ -1,3 +1,7 @@
+import { GlobalContext } from '@/library/globalContext';
+import Link from 'next/link';
+import { useContext } from 'react';
+
 const callouts = [
   {
     name: 'Desk and Office',
@@ -28,6 +32,10 @@ const callouts = [
 ];
 
 const Home = () => {
+  const { globalData, setGlobalData } = useContext(GlobalContext);
+
+  console.log(globalData);
+
   return (
     <>
       {/* 메인 상단 컨텐츠 영역  */}
@@ -48,10 +56,10 @@ const Home = () => {
           <div className="hidden sm:mb-8 sm:flex sm:justify-center">
             <div className="relative rounded-full px-3 py-1 text-sm leading-6 text-gray-600 ring-1 ring-gray-900/10 hover:ring-gray-900/20">
               Announcing our next round of funding.{' '}
-              <a href="#" className="font-semibold text-indigo-600">
+              <Link href="#" className="font-semibold text-indigo-600">
                 <span className="absolute inset-0" aria-hidden="true" />
                 Read more <span aria-hidden="true">&rarr;</span>
-              </a>
+              </Link>
             </div>
           </div>
           <div className="text-center">
@@ -64,18 +72,18 @@ const Home = () => {
               fugiat aliqua.
             </p>
             <div className="mt-10 flex items-center justify-center gap-x-6">
-              <a
+              <Link
                 href="#"
                 className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               >
                 Get started
-              </a>
-              <a
+              </Link>
+              <Link
                 href="#"
                 className="text-sm font-semibold leading-6 text-gray-900"
               >
                 Learn more <span aria-hidden="true">→</span>
-              </a>
+              </Link>
             </div>
           </div>
         </div>
@@ -109,10 +117,10 @@ const Home = () => {
                   />
                 </div>
                 <h3 className="mt-6 text-sm text-gray-500">
-                  <a href={callout.href}>
+                  <Link href={callout.href}>
                     <span className="absolute inset-0" />
                     {callout.name}
-                  </a>
+                  </Link>
                 </h3>
                 <p className="text-base font-semibold text-gray-900">
                   {callout.description}

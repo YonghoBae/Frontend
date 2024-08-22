@@ -1,6 +1,7 @@
+import { GlobalContext } from '@/library/globalContext';
 import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 
 //로그인 페이지 컴포넌트
 const Login = () => {
@@ -10,6 +11,8 @@ const Login = () => {
     email: '',
     password: '',
   });
+
+  const {globalData,setGlobalData} = useContext(GlobalContext);
 
 
   //로그인 UI요소(메일주소/암호) 사용자 입력시 데이터 동기화 처리 함수
@@ -33,7 +36,10 @@ const Login = () => {
 
       if(result.code == 200){
         console.log("정상적으로 로그인 완료");
-        localStorage.setItem('token',result.data);
+        localStorage.setItem('token',result.data.token);
+        console.log(result.data);
+        setGlobalData(result.data.member);
+
         router.push('/');
       }else{
         if(result.code==401 && result.msg == "NotExistEmail"){

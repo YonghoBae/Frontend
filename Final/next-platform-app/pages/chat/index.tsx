@@ -73,6 +73,13 @@ const Chat = () => {
       setMessageList(prev => [...prev, msg]);
     });
 
+    //사용자 지정 채널 입장완료 이벤트 수신기
+    socket.on('entryOk', (msg: Message) => {
+      console.log('서버소켓에서 전달된 데이터 확인-receiveAll:', msg);
+      setMessageList(prev => [...prev, msg]);
+    });
+
+
     //해당 채팅 컴포넌트가 화면에서 사라질때(언마운팅시점)
     //소켓관련 이벤트를 모두 제거해줘야함. 그렇지 않으면 메시지를 여러번 수신할수있음
     return () => {
@@ -99,6 +106,8 @@ const Chat = () => {
     console.log('채팅방 채널이 변경되었습니다.', channel);
     if (channel > 0) {
       console.log('전역 데이터 정보 확인하기:', globalData);
+      //해당 채팅방 입장하기
+      socket.emit('entry', channel.toString(), globalData);
     }
   }, [channel]);
 
@@ -112,7 +121,7 @@ const Chat = () => {
     };
     //채팅서버소켓으로 메시지를 전송
     //socket.emit('서버이벤트명',메시지데이터);
-    socket.emit('broadcast', msgData);
+    socket.emit('broadcast', channel.toString ,msgData);
 
     //메시지 입력박스 초기화
     setMessage('');
